@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 
-const bookSchema = new mongoose.Schema( {
-    firstName:String,
-    LastName:String,
-    title:{
-        type:String,
-        enum:["Mr","Mrs","Miss"],
-        required:true
+const authorSchema = new mongoose.Schema({
+    firstName: String,
+    LastName: String,
+    title: {
+        type: String,
+        enum: ["Mr", "Mrs", "Miss"],
+        required: true
     },
-    email:{
-        require:true,
-        type:String,
-        unique:true
+    email: {
+        require: true,
+        type: String,
+        unique: true
     },
-    password:{
-        require:true,
-        type:String
+    password: {
+        require: true,
+        type: String
     }
 }, { timestamps: true });
 
 
-module.exports = mongoose.model('Author', bookSchema) 
+module.exports = mongoose.model('Author', authorSchema)

@@ -1,50 +1,50 @@
 const mongoose = require('mongoose');
-const ObjectId=mongoose.Schema.Types.ObjectId
+const ObjectId = mongoose.Schema.Types.ObjectId
 
-const userSchema = new mongoose.Schema( {
-    tiltle:{
-        required:true,
-        type:String    
+const blogSchema = new mongoose.Schema({
+    tiltle: {
+        required: true,
+        type: String
     },
-    body:{
-        required:String,
-        type:Sting
+    body: {
+        required: true,
+        type: Sting
     },
-    authroId:{
-        required:true,
-        type:ObjectId,
-        ref:'Author'     
+    authroId: {
+        required: true,
+        type: ObjectId,
+        ref: 'Author'
     },
-    tags:{
-        type:[String],
+    tags: {
+        type: [String],
     },
-    category:{
-        type:[String],
-        require:true
+    category: {
+        type: [String],
+        require: true,
+        enum: ["technology", "entertainment", "life style", "food", "fashion"]
     },
-    subcategory:{
-        type:[String]
+    subcategory: {
+        type: [String]
     },
 
-    deleteAt:{
-        timestamps:true
+    deleteAt: {
+        type: Date,
+        default: null
     },
-    isDeleted:{
-        type:Boolean,
-        default:false
+    isDeleted: {
+        type: Boolean,
+        default: false
 
     },
-    pulbishedAt:{
-        type:String
-       
-    },
-    isPublished:{
-        type:Boolean,
-        default:false
+    pulbishedAt: Date,
+
+    isPublished: {
+        type: Boolean,
+        default: false
 
     }
 
-  
+
 }, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema) 
+module.exports = mongoose.model('Blog', blogSchema)
