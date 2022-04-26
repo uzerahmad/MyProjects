@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const blogSchema = new mongoose.Schema({
-    tiltle: {
+    title: {
         required: true,
         type: String
     },
     body: {
         required: true,
-        type: Sting
+        type: String
     },
-    authroId: {
+    authorId: {
         required: true,
         type: ObjectId,
         ref: 'Author'
@@ -21,7 +21,7 @@ const blogSchema = new mongoose.Schema({
     category: {
         type: [String],
         require: true,
-        enum: ["technology", "entertainment", "life style", "food", "fashion"]
+        enum: ["technology", "entertainment", "life style", "food", "fashion", "travel"]
     },
     subcategory: {
         type: [String]
@@ -36,7 +36,10 @@ const blogSchema = new mongoose.Schema({
         default: false
 
     },
-    pulbishedAt: Date,
+    pulbishedAt: {
+        type: Date,
+        default: null
+    },
 
     isPublished: {
         type: Boolean,
