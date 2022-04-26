@@ -25,14 +25,18 @@ const userSchema = new mongoose.Schema( {
     subcategory:{
         type:[String]
     },
+
     deleteAt:{
         timestamps:true
     },
     isDeleted:{
         type:Boolean,
+        default:false
+
     },
     pulbishedAt:{
-        
+        type:String
+       
     },
     isPublished:{
         type:Boolean,
