@@ -37,5 +37,15 @@ const createBlogs = async function(req, res) {
         res.status(500).send({ error: err.message })
     }
 }
+
+
+
+
+
+
+
 module.exports.createAuthor = createAuthor
+
 module.exports.createBlogs = createBlogs
+
+//module.exports.blogId = blogId
