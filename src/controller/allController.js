@@ -113,52 +113,64 @@ const getBlogs = async function(req,res){
 
 
 
-const updateblogs = async (req,res)=>{
+const updateblogs = async function(req,res){
+    // try{
+        let blogId = req.params.blogId;
+        const title = req.body.title;
+        const body = req.body.body;
+        const tags = req.body.tags;
+        const subcategory = req.body.subcategory;
+        const isPublished = req.body.isPublished;
     
-    let id = req.params.blogId
-    if(!id) return res.status(400).send({ status:false, msg: "plz write the blogId" }) ;
-
-    if(!mongoose.isValidObjectId(id)) return res.status(400).send({ status:false, msg: "its not the objectId" });
-    
-    let checkId = await blogModel.findById(id)
-
-    console.log(checkId)
-    if(!checkId)  return res.status(400).send({ status:false, msg: "No blog with this Id" });
-
-
-    let data = req.body
-    if(Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz ener some data in body" })
-
-    let updateBlog = await blogModel.findByIdAndUpdate(
-        {_id:id},
-        {$set:{title:data.title , body:data.body },
-         $addToSet:{ tags : data.tags,subcategory :data.subcategory}},
-        {new:true}
-         )
-
-         if(data["isPublished"]=== true){
-            data["publishedAt"] = Date.now()
-        }
-        if(data["isDeleted"]=== true){
-            data["deleteAt"] = Date.now()
-
-
+        if(title||body||tags||subcategory){
+        
+    const updateblogs = await blogModel.findByIdAndUpdate(  blogId ,{$addToSet:{tags:tags,subcategory:subcategory},
+        $set : { title: title, body: body, subcategory: subcategory, isPublished: isPublished }},
+        { new: true });
+        console.log(updateblogs.isPublished)
+        if (updateblogs.isPublished == true) {
+            updateblogs.PublishedAt = new Date()
         }
 
-    res.send({status:true , data: updateBlog})
+        return res.status(200).send({ status: true,data:updateblogs ,msg: "successfully Update blog details"});
+        }
 
+    }
+
+    const deletById=async (req,res)=>{
+        try{
+            let data=req.params.id
+             let status=await blogModel.findById({_id:data})
+             if(mongoose.Types.ObjectId.isValid(data)  ) 
+             {
+            let delteblog=await blogModel.findByIdAndUpdate(data,{$set:{isDeleted:true}},{new:true})
+            res.status(200).send({msg:delteblog})
+             }
+           
+        }    
+        catch(err){
+            res.status(500).send(err.message)
+        }
+    }
+    const deletByProperty=async (req,res)=>
+    {
+        try{
+            let data=req.qurey
+            let property=await blogModel.findOneAndUpdate(data,{$set:{isDeleted:true}},{new:true})
     
+                   res.status(200).send({status:true,msg:property})
     
-
-}
-
-
+        }
+        catch(e){
+            res.send(e.message)
+    
+        }
+    }
+     
+ module.exports.deletById=deletById
 
 module.exports.createAuthor = createAuthor
 
 module.exports.createBlogs = createBlogs
 module.exports.getBlogs=getBlogs
 module.exports.updateblogs=updateblogs
-// module.exports.getfilter=getfilter
-
-//module.exports.blogId = blogId
