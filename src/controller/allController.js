@@ -125,12 +125,7 @@ const getBlogs = async function(req,res){
 
 const updateblogs = async function(req,res){
 
-    //   ### PUT /blogs/:blogId
-    // - Updates a blog by changing the its title, body, adding tags, adding a subcategory. (Assuming tag and subcategory received in body is need to be added)
-    // - Updates a blog by changing its publish status i.e. adds publishedAt date and set published to true
-    // - Check if the blogId exists (must have isDeleted false). If it doesn't, return an HTTP status 404 with a response body like [this](#error-response-structure)
-    // - Return an HTTP status 200 if updated successfully with a body like [this](#successful-response-structure) 
-    // - Also make sure in the response you return the updated blog document. 
+   
      try{
         let blogId = req.params.blogId;
         console.log(blogId)
@@ -209,9 +204,7 @@ const updateblogs = async function(req,res){
             let tags = data.tags
             let authorId= data.authorId
             let subcategory= data.subcategory
-    //      ### DELETE /blogs?queryParams
-    // - Delete blog documents by category, authorid, tag name, subcategory name, unpublished
-    // - If the blog document doesn't exist then return an HTTP status of 404 with a body like [this](#error-response-structure)
+
 
             console.log(data)
             if(data ===undefined||Object.keys(data).length===0) return res.status(400).send({status: false,msg :"plz enter the data"})
@@ -230,16 +223,11 @@ const updateblogs = async function(req,res){
 
             if(x.length ===0)  return res.send("already deleted")
 
-            // console.log(prop) 
-            // if(prop) return res.status(404).send({msg :"Already dealeted"}) 
-
             let property=await blogModel.updateMany( data ,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
 
             if(!property) return res.status(404).send({status: false,msg :"blog doesn't exist"})
     
                    res.status(200).send({status:true,msg:property})
-
-    
         }
         catch (err) {
             console.log(err.message)
