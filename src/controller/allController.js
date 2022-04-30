@@ -24,21 +24,21 @@ const createAuthor = async (req, res) => {
         // title validation
         if(!data.title)  return res.status(400).send({ status:false, msg: "title must be present" });
         if(typeof data.title !== "string") return res.status(400).send({ status:false, msg: "title should be string" });
-        if(!( ["Mr", "Mrs", "Miss"].includes(data.title))) return res.status(400).send({status: false,msg:"plz write valid title"})
+        if(!( ["Mr", "Mrs", "Miss"].includes(data.title))) return res.status(400).send({status: false,msg:"title can only have Mr,Mrs,Miss"})
         
         // email validation
         if(!data.email)  return res.status(400).send({ status:false, msg: "email must be present" });
         let y = data.email
         let regx = /^([a-zA-Z0-9\._]+)@([a-zA-Z])+\.([a-z]+)(.[a-z])?$/
         let x = y.match(regx)
-        if(!x) return res.send({status:false,msg:"write the correct format for email"})
+        if(!x) return res.send({status:false,msg:"please enter valid email address"})
          let mail = await authorModel.findOne({email:y})
          console.log(mail)
          if(mail) return res.status(400).send({status: false,msg:"this email is already present"})
 
         // password validation
         if(!data.password)  return res.status(400).send({ status:false, msg: "plz write the password" });
-        if(typeof data.firstName !== "string") return res.status(400).send({ status:false, msg: "title should be string" });
+        if(typeof data.firstName !== "string") return res.status(400).send({ status:false, msg: "password should be string" });
 
         let author = await authorModel.create(data)
         res.status(201).send({ status: true, Data: author })

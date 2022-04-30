@@ -31,25 +31,25 @@ const updateblogs = async function(req,res){
         }
         if(title){
             if(title===undefined){
-                return req.status(400).send({status:false,msg:"enter data in title field"})
+                return res.status(400).send({status:false,msg:"enter data in title field"})
             }
             if(typeof title !== 'string'){
-                return req.status(400).send({status:false,msg:"title should be string"})
+                return res.status(400).send({status:false,msg:"title should be string"})
             }
         }
         if(body){
             if(body===undefined){
-                return req.status(400).send({status:false,msg:"enter data in body field"})
+                return res.status(400).send({status:false,msg:"enter data in body field"})
             }
             if(typeof body !== 'string'){
-                return req.status(400).send({status:false,msg:"Body should be string"})
+                return res.status(400).send({status:false,msg:"Body should be string"})
             }
         }
     
         if(!(title||body||tags||subcategory)) {return res.status(404).send({status:false,msg:"Plz enter valid keys for updation "})}
         
         const updateblogs = await blogModel.findByIdAndUpdate(  
-        {blogId},
+        blogId,
         {$addToSet:{tags:tags,subcategory:subcategory},
          $set : { title: title, body: body}
         },

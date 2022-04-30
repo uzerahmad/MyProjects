@@ -15,6 +15,7 @@ const createAuthor = async (req, res) => {
 
         // FirstName validation
         if(!data.firstName)  return res.status(400).send({ status:false, msg: "firstName must be present" });
+        if(data.firstName===undefined)return res.status(400).send({ status:false, msg: "firstName can not beempty" });
         if(typeof data.firstName !== "string") return res.status(400).send({ status:false, msg: "firstName should be string" });
 
         // lastName validation

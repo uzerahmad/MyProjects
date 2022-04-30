@@ -13,7 +13,7 @@ const get=require("../controller/GetController")
 
 
 
-router.post("/createAuthor",middleWare.validateToken, author.createAuthor)
+router.post("/createAuthor", author.createAuthor)
 
 router.post("/createBlogs",middleWare.validateToken,post.createBlogs)
 
@@ -23,7 +23,7 @@ router.put("/blogs/:blogId", middleWare.validateToken,put.updateblogs)
 
 router.delete("/blogs/:blogId",middleWare.validateToken,dController.deletById)
 
-router.delete("/blogs",middleWare.validateToken,dController.deletByProperty)
+ router.delete("/blogs",middleWare.validateToken,dController.deletByProperty)
 
 router.post("/login",loginController.loginUser)
 

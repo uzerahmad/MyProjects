@@ -14,6 +14,27 @@ const createBlogs = async function(req, res) {
         //  data validation
         
         if(Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz enter some data" })
+
+         // authorId validation
+         let authorId = data.authorId
+         if (!authorId) {
+             return res.status(400).send({ status:false,msg: "authorId must be present" })
+         }
+         let idCheck =mongoose.isValidObjectId(authorId)
+         if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
+ 
+         const id = await authorModel.findById(authorId)
+         if (!id) {
+             return res.status(404).send({ status: false, msg: "invalid authorId" })
+         }
+
+         let token = req["authorId"]
+
+         if(token!=authorId)
+         {
+             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+         }
+ 
         // title validation
         if (!data.title) {
             return res.status(400).send({ status:false, msg: "title is not given" })
@@ -26,22 +47,11 @@ const createBlogs = async function(req, res) {
         }
         if(typeof data.title !== "string") return res.status(400).send({ status:false, msg: "body should be string" });
         
-        // authorId validation
-        let authorId = data.authorId
-        if (!authorId) {
-            return res.status(400).send({ status:false,msg: "authorId must be present" })
-        }
-        let idCheck =mongoose.isValidObjectId(authorId)
-        if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
-
-        const id = await authorModel.findById(authorId)
-        if (!id) {
-            return res.status(404).send({ status: false, msg: "invalid authorId" })
-        }
-
+       
         if (!data.category) {
             return res.status(400).send({status:false, msg: "category must be present" })
         }
+       
 
         const Blog = await blogModel.create(data)
         return res.status(201).send({ status: true, msg: Blog })

@@ -15,6 +15,7 @@ const getBlogs = async function(req,res){
 
         
         let token =req["authorId"]
+        
         if(authorId){
             if(!mongoose.isValidObjectId(authorId))
             {
@@ -28,7 +29,7 @@ const getBlogs = async function(req,res){
         }       
         let filter ={isDeleted:false,isPublished:true,...data1}
          
-        if(!authorId &&!tags&& !category && !subcategory) return res.send("not  valid filter")
+        if(!(authorId ||tags||category ||subcategory)) return res.status(404).send({status:false,msg:"not  valid filter"})
 
         let data = await blogModel.find({$and:[filter,{authorId:token}]})      
         if(data.length === 0){

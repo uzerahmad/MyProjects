@@ -26,7 +26,7 @@ const validateToken = async function (req, res, next) {
         }
         req["authorId"]= decodedToken.authorId
         console.log(req["authorId"])
-    
+        
         next();
     } catch (err) {
         return res.status(500).send({  status:"Error", error: err.message })
