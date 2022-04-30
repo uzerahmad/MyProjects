@@ -1,5 +1,6 @@
 const express = require('express');
 const { default: mongoose } = require('mongoose');
+const { update } = require('../model/authorModel');
 const authorModel = require("../model/authorModel")
 const blogModel = require("../model/blogModel")
  
@@ -74,6 +75,7 @@ const createBlogs = async function(req, res) {
         }
         let idCheck =mongoose.isValidObjectId(authorId)
         if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
+
         const id = await authorModel.findById(authorId)
         if (!id) {
             return res.status(404).send({ status: false, msg: "invalid authorId" })
@@ -92,25 +94,35 @@ const createBlogs = async function(req, res) {
 
 const getBlogs = async function(req,res){
     try
-    { let fil = req.query
-        authorId = fil.authorId
-        category = fil.category
-        tags=fil.tags
-        subcategory=fil.subcategory
+    { let data1 = req.query
+        const {authorId,category,tags,subcategory} = data1
 
-         let keys = Object.keys(fil)
-         console.log(keys)
-         console.log(authorId in keys)
-         if( authorId){
-        let idCheck = mongoose.isValidObjectId(authorId)
-        if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
+        // authorId = fil.authorId
+        // category = fil.category
+        // tags=fil.tags
+        // subcategory=fil.subcategory  
+        let token =req["authorId"]
+        if(authorId){
+            if(!mongoose.isValidObjectId(authorId))
+            {
+                return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })   
+            }
+            
+                if(token!=authorId)
+                {
+                    return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+                }
+        }       
+        let filter ={isDeleted:false,isPublished:true,...data1}
+         
+        if(!authorId &&!tags&& !category && !subcategory) return res.send("not  valid filter")
+
+        let data = await blogModel.find({$and:[filter,{authorId:token}]})      
+        if(data.length === 0){
+            return res.status(404).send({status:false , msg:"Blogs not found"})
         }
-        
-         if(!authorId &&!tags&& !category && !subcategory) return res.send("not filter")
 
-        let data = await blogModel.find({$and:[{isDeleted:false} , {isPublished:true},fil]})      
-        if(data.length === 0) return res.status(404).send({status:false , msg:"Blogs not found"})
-        res.status(200).send({status: true ,Data :data})
+        return res.status(200).send({status: true ,Data :data})
         }
 
         
@@ -125,70 +137,87 @@ const getBlogs = async function(req,res){
 
 const updateblogs = async function(req,res){
 
-   
      try{
         let blogId = req.params.blogId;
-        console.log(blogId)
+
+        let data = req.body
+        const {title,body,tags,subcategory}=data
+
         let idCheck = mongoose.isValidObjectId(blogId)
-        console.log(idCheck)
+        
         if(!idCheck) return res.status(400).send({ status:false, msg: "blogId is not a type of objectId" })
-        
-        const title = req.body.title;
-        const body = req.body.body;
-        const tags = req.body.tags;
-        const subcategory = req.body.subcategory;
-        const isPublished = req.body.isPublished;
 
-        let exist = await blogModel.findById(blogId)
-        if(!exist) return  res.status(404).send({ status:false, msg: "blog in not present" })
+        let status= await blogModel.findById(blogId)
+        if(!status) return res.status(404).send({msg :"this blog is not present"})
 
-        if(exist.isDeleted ===true) return  res.status(404).send({ status:false, msg: "already deleted" })
+
+        if(status.isDeleted ===true) return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
+        let token =req["authorId"]
+        if(status.authorId!= token){
+            return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+        }
+        if(title){
+            if(title===undefined){
+                return req.status(400).send({status:false,msg:"enter data in title field"})
+            }
+            if(typeof title !== 'string'){
+                return req.status(400).send({status:false,msg:"title should be string"})
+            }
+        }
+        if(body){
+            if(body===undefined){
+                return req.status(400).send({status:false,msg:"enter data in body field"})
+            }
+            if(typeof body !== 'string'){
+                return req.status(400).send({status:false,msg:"Body should be string"})
+            }
+        }
     
-        if(title||body||tags||subcategory){
+        if(!(title||body||tags||subcategory)) {return res.status(404).send({status:false,msg:"Plz enter valid keys for updation "})}
         
-    const updateblogs = await blogModel.findByIdAndUpdate(  blogId ,{$addToSet:{tags:tags,subcategory:subcategory},
-        $set : { title: title, body: body}},
+        const updateblogs = await blogModel.findByIdAndUpdate(  
+        {blogId},
+        {$addToSet:{tags:tags,subcategory:subcategory},
+         $set : { title: title, body: body}
+        },
         { new: true });
-        console.log(updateblogs.isPublished)
+        console.log(updateblogs)
 
         if (updateblogs.isPublished === true) {
-            console.log("hello")
-            updateblogs["pulbishedAt"] = Date.now()
+             updateblogs["pulbishedAt"] = Date.now()
+        
         }
-
         return res.status(200).send({ status: true,data:updateblogs ,msg: "successfully Update blog details"});
     }
-    else return res.status(404).send({ status:false, msg: "not valid" })
-    }  
+      
     catch (err) {
         console.log(err.message)
-        res.status(500).send({ status: "error", error: err.message })
+        return res.status(500).send({ status: "error", error: err.message })
     } 
 
 
-    }
+}
 
     const deletById=async (req,res)=>{
         try{
-            let data=req.params.Id
+            let data=req.params.blogId
             
-            console.log(data)
-            let idCheck = mongoose.isValidObjectId(data)
-            console.log(idCheck)
-            if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
+            let idCheck = mongoose.isValidObjectId(blogId)
+        
+            if(!idCheck) return res.status(400).send({ status:false, msg: "blogId is not a type of objectId" })
+
+            let status= await blogModel.findById(blogId)
+            if(!status) return res.status(404).send({msg :"this blog is not present"})
+
+
+            if(status.isDeleted ===true) return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
+            let token =req["authorId"]
+            if(status.authorId!= token){
+                return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+            }
             
-             let status= await blogModel.findById(data)
-             if(!status) return res.status(404).send({msg :"data is not present"})
-             let prop= status.isDeleted
-
-             if(prop) return res.status(404).send({msg :"Already dealeted"}) 
-
-             if(mongoose.Types.ObjectId.isValid(data) && !prop ) 
-             {
-            let delteblog=await blogModel.findByIdAndUpdate(data,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
-            res.status(200).send(" ")
-             }
-             
+            let delteblog = await blogModel.findByIdAndUpdate(data,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
+            return res.status(200).send("")    
            
         }    
         catch (err) {
@@ -196,34 +225,45 @@ const updateblogs = async function(req,res){
             res.status(500).send({ status: "error", error: err.message })
         }
     }
+
+
     const deletByProperty=async (req,res)=>
     {
         try{
-            let data = req.query
-            let category = data.category
-            let tags = data.tags
-            let authorId= data.authorId
-            let subcategory= data.subcategory
-
-
-            console.log(data)
-            if(data ===undefined||Object.keys(data).length===0) return res.status(400).send({status: false,msg :"plz enter the data"})
+            let data = req.body
+            const {category,tags,authorId,subcategory} = data
+            let token =req["authorId"]
+            let document = {
+                isDeleted: false,
+                authorId:token,
+                ...data
+            }
+            if(data === undefined||Object.values(data).length===0){
+                 return res.status(400).send({status: false,msg :"plz enter the data"})
+            }
             
-            if(!authorId &&!tags&& !category && !subcategory) return res.status(404).send({msg:"not a valid  filter"})
+            if(authorId){
+                if(!mongoose.isValidObjectId(authorId))
+                {
+                    return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })   
+                }
+                
+                    if(token!=authorId)
+                    {
+                        return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+                    }
+            }  
 
-            let exist = await blogModel.find(data)
-            console.log(exist)
+            if(!(authorId||category||tags||subcategory)) {
+                return res.status(404).send({msg:"Plz enter valid data for deletion"})
+            }
+
+            let exist = await blogModel.find(data,{isDeleted:false})
             
-            if(exist.length===0) return res.status(404).send({msg :"blog is not present in db"})
-
-            let x = exist.filter(y => y.isDeleted == false)
             
-            console.log("in x not deleted",x)
-            
+            if(!exist) return res.status(404).send({msg :"blog is not present in db"})
 
-            if(x.length ===0)  return res.send("already deleted")
-
-            let property=await blogModel.updateMany( data ,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
+            let property=await blogModel.updateMany( document,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
 
             if(!property) return res.status(404).send({status: false,msg :"blog doesn't exist"})
     
