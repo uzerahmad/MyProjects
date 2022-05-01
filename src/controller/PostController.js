@@ -33,7 +33,7 @@ const createBlogs = async function(req, res) {
          let token = req["authorId"]  
 
         //  authorization
-         if(token!=authorId)
+         if(token!==authorId)
          {
             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
          }
@@ -92,11 +92,6 @@ const createBlogs = async function(req, res) {
             if(!Array.isArray(subcategory))return res.status(400)
             .send({status: false,msg:"subcategory should be array of strings"})
         }
-
-        // check if this blog is already present in db or not
-        
-        // const check = await blogModel.find(data)
-        // if(check.length!==0){return res.status(404).send("this same blog is already present in db")}
         
         // Blog Creation
         const Blog = await blogModel.create(data)

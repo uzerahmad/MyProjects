@@ -33,6 +33,7 @@ const updateblogs = async function(req,res){
         }
         if(status.isDeleted ===true) return  res.status(404)
         .send({ status:false, msg: "this blog is already deleted" })
+        
         // if title is present
         if(title){
             if(typeof title !== 'string'){
@@ -57,7 +58,7 @@ const updateblogs = async function(req,res){
           $set : { title: title, body: body}
         },
         { new: true});
-        console.log(updateblogs)
+        
 
         if (updateblogs.isPublished === true) {
             updateblogs["pulbishedAt"] = Date.now()

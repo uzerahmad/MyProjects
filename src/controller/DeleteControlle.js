@@ -76,7 +76,8 @@ const blogModel = require("../model/blogModel")
 
             let exist = await blogModel.findOne({$and:[data,{isDeleted:false}]})
 
-            if(exist.authorId!==token) return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+            if(exist.authorId!==token) return res.status(403)
+            .send({status:false,msg:"You are not authorized to access this data"})
 
            
             if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
