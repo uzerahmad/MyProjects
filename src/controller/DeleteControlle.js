@@ -47,6 +47,7 @@ const blogModel = require("../model/blogModel")
     {
         try{
             let data = req.query
+            console.log(data)
             const {category,tags,authorId,subcategory} = data
             delete data.title
             delete data.body
@@ -56,6 +57,7 @@ const blogModel = require("../model/blogModel")
                 authorId:token,
                 ...data
             }
+            console.log(document)
 
             if(Object.keys(data).length===0){
                  return res.status(400).send({status: false , msg :"plz enter the data"})
@@ -65,24 +67,21 @@ const blogModel = require("../model/blogModel")
                 if(!mongoose.isValidObjectId(authorId))
                 {
                     return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })   
-                }
-                
-                    if(token!=authorId)
-                    {
-                        return res.status(403)
-                        .send({status:false,msg:"You are not authorized to access this data"})
-                    }
+                }   
             }  
            
             if(!(authorId||category||tags||subcategory||data.isPublished)) {
                 return res.status(404).send({status:false,msg:"Plz enter valid data for deletion"})
             }
 
-            let exist = await blogModel.find({$and:[data,{isDeleted:false}]})
-           
-            if(exist.length===0) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
+            let exist = await blogModel.findOne({$and:[data,{isDeleted:false}]})
 
-            let property = await blogModel.updateMany( document,
+            if(exist.authorId!==token) return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+
+           
+            if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
+
+            let property = await blogModel.updateMany({$and:[data,{isDeleted:false},{authorId:token}]},
                 {$set:{isDeleted:true,deleteAt: Date.now()}},
                 {new:true});
 

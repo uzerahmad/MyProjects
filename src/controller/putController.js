@@ -16,7 +16,7 @@ const updateblogs = async function(req,res){
         
         let {title,body,tags,subcategory}=data  // destructuring
 
-        title = title.trim() // remove the whiteSpaces
+         
 
         // blogid Validation
         let idCheck = mongoose.isValidObjectId(blogId)
@@ -26,17 +26,18 @@ const updateblogs = async function(req,res){
         let status= await blogModel.findById(blogId)
         if(!status) return res.status(404).send({msg :"this blog is not present"})
 
-
-        if(status.isDeleted ===true) return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
         // authorization
         let token =req["authorId"] 
-        if(status.authorId!= token){
+        if(status.authorId!== token){
             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
         }
+        if(status.isDeleted ===true) return  res.status(404)
+        .send({ status:false, msg: "this blog is already deleted" })
         // if title is present
         if(title){
             if(typeof title !== 'string'){
                 return res.status(400).send({status:false,msg:"title should be string"})
+                 title = title.trim()// remove the whiteSpaces
             }
         }
         // if body is present
