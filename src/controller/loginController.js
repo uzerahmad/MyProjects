@@ -2,10 +2,6 @@
 
 
 
-const { required } = require("nodemon/lib/config");
-
-
-const res = require("express/lib/response");
 const jwt = require("jsonwebtoken");
 const authorModel = require("../model/authorModel");
 
@@ -14,8 +10,8 @@ const authorModel = require("../model/authorModel");
 
 const loginUser = async function (req, res) {
     try{
-      let userName = req.body.email;
-      let password = req.body.password;
+      let userName = req.body.email.trim().toLowerCase();
+      let password = req.body.password.trim();
       if(!userName) {
         return res.status(400).send({msg:"email can not be empty"})
       }

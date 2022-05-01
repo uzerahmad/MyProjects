@@ -1,8 +1,6 @@
-const express = require('express');
-const { default: mongoose } = require('mongoose');
-const { update } = require('../model/authorModel');
+
 const authorModel = require("../model/authorModel")
-const blogModel = require("../model/blogModel")
+
  
 
 
@@ -10,36 +8,45 @@ const createAuthor = async (req, res) => {
      try{
          let data = req.body
         //  data validation
+
+        let {firstName,lastName,title, email,password} = data
         
         if(Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz enter some data" })
 
         // FirstName validation
-        if(!data.firstName)  return res.status(400).send({ status:false, msg: "firstName must be present" });
-        if(data.firstName===undefined)return res.status(400).send({ status:false, msg: "firstName can not beempty" });
-        if(typeof data.firstName !== "string") return res.status(400).send({ status:false, msg: "firstName should be string" });
+        if(!firstName)  return res.status(400).send({ status:false, msg: "firstName must be present" });
+        if(typeof firstName !== "string") return res.status(400).send({ status:false, msg: "firstName should be string" });
+        data.firstName = data.firstName.trim()
 
         // lastName validation
-        if(!data.lastName)  return res.status(400).send({ status:false, msg: "Last name must be present" });
-        if(typeof data.lastName !== "string") return res.status(400).send({ status:false, msg: "LastName should be string" });
+        if(!lastName)  return res.status(400).send({ status:false, msg: "Last name must be present" });
+        if(typeof lastName !== "string") return res.status(400).send({ status:false, msg: "LastName should be string" });
+        data.lastName=data.lastName.trim()
 
         // title validation
-        if(!data.title)  return res.status(400).send({ status:false, msg: "title must be present" });
-        if(typeof data.title !== "string") return res.status(400).send({ status:false, msg: "title should be string" });
+        if(!title)  return res.status(400).send({ status:false, msg: "title must be present" });
+        if(typeof title !== "string") return res.status(400).send({ status:false, msg: "title should be string" });
         if(!( ["Mr", "Mrs", "Miss"].includes(data.title))) return res.status(400).send({status: false,msg:"plz write valid title"})
         
         // email validation
-        if(!data.email)  return res.status(400).send({ status:false, msg: "email must be present" });
-        let y = data.email
+        if(!email) { 
+            return res.status(400).send({ status:false, msg: "email must be present" });
+        }
         let regx = /^([a-zA-Z0-9\._]+)@([a-zA-Z])+\.([a-z]+)(.[a-z])?$/
-        let x = y.match(regx)
-        if(!x) return res.send({status:false,msg:"write the correct format for email"})
-         let mail = await authorModel.findOne({email:y})
-         console.log(mail)
+
+        let x = email.match(regx)
+        if(!x) {
+            return res.send({status:false,msg:"write the correct format for email"})
+        }
+         let mail = await authorModel.findOne({email: email.toLowerCase()})
+
          if(mail) return res.status(400).send({status: false,msg:"this email is already present"})
+         data.email = data.email.toLowerCase()
 
         // password validation
-        if(!data.password)  return res.status(400).send({ status:false, msg: "plz write the password" });
-        if(typeof data.firstName !== "string") return res.status(400).send({ status:false, msg: "title should be string" });
+        if(!password)  return res.status(400).send({ status:false, msg: "plz write the password" });
+        if(typeof password !== "string") return res.status(400).send({ status:false, msg: "Password should be string" });
+        data.password= data.password.trim()
 
         let author = await authorModel.create(data)
         res.status(201).send({ status: true, Data: author })

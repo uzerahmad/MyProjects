@@ -1,13 +1,8 @@
 
-
-
-
-
 const jwt = require("jsonwebtoken");
 
 const mongoose = require("mongoose")
-const authorModel = require("../model/authorModel")
-const blogModel = require("../model/blogModel")
+
 
 
 const validateToken = async function (req, res, next) {

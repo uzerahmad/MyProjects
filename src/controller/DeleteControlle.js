@@ -1,7 +1,6 @@
-const express = require('express');
-const { default: mongoose } = require('mongoose');
-const { update } = require('../model/authorModel');
-const authorModel = require("../model/authorModel")
+
+const mongoose = require('mongoose');
+
 const blogModel = require("../model/blogModel")
  
 
@@ -9,11 +8,10 @@ const blogModel = require("../model/blogModel")
 
     const deletById=async (req,res)=>{
         try{
-            console.log("hello")
+           
             let data= req.params.blogId
-            console.log("hii")
-            if(!data){return res.status(400).send({ status:false, msg: "enter blog_id must be present" }) }
-            
+           
+            // blogId  validation
             let idCheck = mongoose.isValidObjectId(data)
         
             if(!idCheck) return res.status(400).send({ status:false, msg: "blogId is not a type of objectId" })
@@ -22,14 +20,20 @@ const blogModel = require("../model/blogModel")
             if(!status) return res.status(404).send({status:false,msg :"this blog is not present"})
 
 
-            if(status.isDeleted ===true) return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
+            if(status.isDeleted ===true) {
+            return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
+            }
+            
+            // authorization
             let token =req["authorId"]
             if(status.authorId!= token){
                 return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
             }
             
-            let delteblog = await blogModel.findByIdAndUpdate(data,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
-            return res.status(200).send("this blog is deleted")    
+            let delteblog = await blogModel.findByIdAndUpdate(data,
+                {$set:{isDeleted:true,deleteAt: Date.now()}},
+                {new:true})
+            return res.status(200).send("this blog is deleted successfully")    
            
         }    
         catch (err) {
@@ -42,8 +46,10 @@ const blogModel = require("../model/blogModel")
     const deletByProperty=async (req,res)=>
     {
         try{
-            let data = req.body
+            let data = req.query
             const {category,tags,authorId,subcategory} = data
+            delete data.title
+            delete data.body
             let token =req["authorId"]
             let document = {
                 isDeleted: false,
@@ -51,7 +57,7 @@ const blogModel = require("../model/blogModel")
                 ...data
             }
 
-            if(data === undefined||Object.values(data).length===0){
+            if(Object.keys(data).length===0){
                  return res.status(400).send({status: false , msg :"plz enter the data"})
             }
             
@@ -63,11 +69,12 @@ const blogModel = require("../model/blogModel")
                 
                     if(token!=authorId)
                     {
-                        return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
+                        return res.status(403)
+                        .send({status:false,msg:"You are not authorized to access this data"})
                     }
             }  
            
-            if(!(authorId||category||tags||subcategory)) {
+            if(!(authorId||category||tags||subcategory||data.isPublished)) {
                 return res.status(404).send({status:false,msg:"Plz enter valid data for deletion"})
             }
 
@@ -75,7 +82,9 @@ const blogModel = require("../model/blogModel")
            
             if(exist.length===0) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
 
-            let property=await blogModel.updateMany( document,{$set:{isDeleted:true,deleteAt: Date.now()}},{new:true})
+            let property = await blogModel.updateMany( document,
+                {$set:{isDeleted:true,deleteAt: Date.now()}},
+                {new:true});
 
             res.status(200).send({status:true,msg:property})
         }
