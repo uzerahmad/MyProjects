@@ -20,15 +20,15 @@ const blogModel = require("../model/blogModel")
             if(!status) return res.status(404).send({status:false,msg :"this blog is not present"})
 
 
-            if(status.isDeleted ===true) {
-            return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
-            }
-            
             // authorization
             let token =req["authorId"]
             if(status.authorId!= token){
                 return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
             }
+
+            if(status.isDeleted ===true) {
+                return  res.status(404).send({ status:false, msg: "this blog is already deleted" })
+                }
             
             let delteblog = await blogModel.findByIdAndUpdate(data,
                 {$set:{isDeleted:true,deleteAt: Date.now()}},
@@ -48,9 +48,10 @@ const blogModel = require("../model/blogModel")
         try{
             let data = req.query
             console.log(data)
+            
             const {category,tags,authorId,subcategory} = data
-            delete data.title
-            delete data.body
+
+            
             let token =req["authorId"]
             let document = {
                 isDeleted: false,
@@ -75,14 +76,15 @@ const blogModel = require("../model/blogModel")
             }
 
             let exist = await blogModel.findOne({$and:[data,{isDeleted:false}]})
+            if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
 
             if(exist.authorId!==token) return res.status(403)
             .send({status:false,msg:"You are not authorized to access this data"})
 
            
-            if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
+            
 
-            let property = await blogModel.updateMany({$and:[data,{isDeleted:false},{authorId:token}]},
+            let property = await blogModel.updateMany(document,
                 {$set:{isDeleted:true,deleteAt: Date.now()}},
                 {new:true});
 

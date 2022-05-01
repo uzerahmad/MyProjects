@@ -20,7 +20,7 @@ const validateToken = async function (req, res, next) {
 
         }
         req["authorId"]= decodedToken.authorId
-        console.log(req)
+        // console.log(req)
         console.log(req["authorId"])
         
         next();

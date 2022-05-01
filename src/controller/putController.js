@@ -33,21 +33,8 @@ const updateblogs = async function(req,res){
         }
         if(status.isDeleted ===true) return  res.status(404)
         .send({ status:false, msg: "this blog is already deleted" })
-        
-        // if title is present
-        if(title){
-            if(typeof title !== 'string'){
-                return res.status(400).send({status:false,msg:"title should be string"})
-                 title = title.trim()// remove the whiteSpaces
-            }
-        }
-        // if body is present
-        if(body){
-            
-            if(typeof body !== 'string'){
-                return res.status(400).send({status:false,msg:"Body should be string"})
-            }
-        }
+
+   
     
         if(!(title||body||tags||subcategory)) {
             return res.status(404).send({status:false,msg:"Plz enter valid keys for updation "})
