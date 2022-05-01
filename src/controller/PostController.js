@@ -33,7 +33,7 @@ const createBlogs = async function(req, res) {
          let token = req["authorId"]  
 
         //  authorization
-         if(token!==authorId)
+         if(token!=authorId)
          {
             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
          }
@@ -44,7 +44,7 @@ const createBlogs = async function(req, res) {
         }
         if(typeof title !== "string") return res.status(400)
         .send({ status:false, msg: "title should be string" });
-        console.log(title.trim())
+        
         data.title = data.title.trim()
 
         // body validation

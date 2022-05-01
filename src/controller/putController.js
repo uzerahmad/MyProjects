@@ -28,7 +28,8 @@ const updateblogs = async function(req,res){
 
         // authorization
         let token =req["authorId"] 
-        if(status.authorId!== token){
+
+        if(status.authorId!= token){
             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
         }
         if(status.isDeleted ===true) return  res.status(404)
@@ -42,15 +43,12 @@ const updateblogs = async function(req,res){
         
         const updateblogs = await blogModel.findByIdAndUpdate( blogId,
         { $addToSet: {tags:tags,subcategory:subcategory},
-          $set : { title: title, body: body}
+          $set : { title: title, body: body,isPublished:true,pulbishedAt: Date.now()}
         },
         { new: true});
         
 
-        if (updateblogs.isPublished === true) {
-            updateblogs["pulbishedAt"] = Date.now()
-        }
-
+        
         return res.status(200).send({ status: true, data:updateblogs });
     }
       

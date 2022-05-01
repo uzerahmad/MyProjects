@@ -10,7 +10,7 @@ const authorModel = require("../model/authorModel");
 
 const loginUser = async function (req, res) {
     try{
-      let userName = req.body.email.trim().toLowerCase();
+      let userName = req.body.email
       let password = req.body.password.trim();
       if(!userName) {
         return res.status(400).send({msg:"email can not be empty"})

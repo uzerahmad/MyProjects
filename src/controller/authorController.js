@@ -36,7 +36,7 @@ const createAuthor = async (req, res) => {
 
         let x = email.match(regx)
         if(!x) {
-            return res.send({status:false,msg:"write the correct format for email"})
+            return res.status(400).send({status:false,msg:"write the correct format for email"})
         }
          let mail = await authorModel.findOne({email: email.toLowerCase()})
 

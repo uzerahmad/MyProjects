@@ -10,13 +10,13 @@ const blogModel = require("../model/blogModel")
 const getBlogs = async function(req,res){
     try
     { let data1 = req.query
-        delete data1.title
-        delete data1.body
+        // delete data1.title
+        // delete data1.body
         
         const {authorId,category,tags,subcategory} = data1
 
         if(Object.keys(data1).length){
-            if(!(authorId ||tags||category ||subcategory)) return res.status(404)
+            if(!(authorId ||tags||category ||subcategory)) return res.status(400)
             .send({status:false,msg:"not a valid filter"})
              }
       
@@ -28,7 +28,7 @@ const getBlogs = async function(req,res){
         }  
 
         let filter = {isDeleted:false,isPublished:true, ...data1 }
-        console.log(filter)
+        // console.log(filter)
 
         
         let data = await blogModel.find(filter)      

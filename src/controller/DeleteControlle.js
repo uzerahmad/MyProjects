@@ -22,7 +22,7 @@ const blogModel = require("../model/blogModel")
 
             // authorization
             let token =req["authorId"]
-            if(status.authorId!= token){
+            if(status.authorId != token){
                 return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
             }
 
@@ -58,7 +58,7 @@ const blogModel = require("../model/blogModel")
                 authorId:token,
                 ...data
             }
-            console.log(document)
+            
 
             if(Object.keys(data).length===0){
                  return res.status(400).send({status: false , msg :"plz enter the data"})
@@ -78,7 +78,7 @@ const blogModel = require("../model/blogModel")
             let exist = await blogModel.findOne({$and:[data,{isDeleted:false}]})
             if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
 
-            if(exist.authorId!==token) return res.status(403)
+            if(exist.authorId!=token) return res.status(403)
             .send({status:false,msg:"You are not authorized to access this data"})
 
            
