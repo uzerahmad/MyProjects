@@ -9,7 +9,7 @@ const validateToken = async function (req, res, next) {
     try {
         let token = req.headers['x-Api-Key'] || req.headers['x-api-key']
         if (!token) {
-           return res.status(404).send({ status: false, msg: "token must be present" });
+           return res.status(401).send({ status: false, msg: "token must be present" });
         }
 
         let decodedToken = jwt.verify(token, "project-1-group-12")

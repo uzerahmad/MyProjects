@@ -33,7 +33,7 @@ const blogModel = require("../model/blogModel")
             let delteblog = await blogModel.findByIdAndUpdate(data,
                 {$set:{isDeleted:true,deletedAt: Date.now()}},
                 {new:true})
-            return res.status(200).send("this blog is deleted successfully")    
+            return res.status(200).send({status:true,msg:"this blog is deleted successfully"})    
            
         }    
         catch (err) {
@@ -49,7 +49,7 @@ const blogModel = require("../model/blogModel")
             let data = req.query
             console.log(data)
             
-            const {category,tags,authorId,subcategory} = data
+            const {category,tags,authorId,subcategory,isPublished } = data
 
             
             let token =req["authorId"]
@@ -71,7 +71,7 @@ const blogModel = require("../model/blogModel")
                 }   
             }  
            
-            if(!(authorId||category||tags||subcategory||data.isPublished)) {
+            if(!(authorId||category||tags||subcategory||isPublished)) {
                 return res.status(404).send({status:false,msg:"Plz enter valid data for deletion"})
             }
 

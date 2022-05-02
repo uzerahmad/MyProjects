@@ -37,9 +37,10 @@ const createBlogs = async function(req, res) {
          {
             return res.status(403).send({status:false,msg:"You are not authorized to access this data"})
          }
+         console.log(title)
  
         // title validation
-        if (!title) {
+        if (!title||title===undefined) {
             return res.status(400).send({ status:false, msg: "title is not given" })
         }
         if(typeof title !== "string") return res.status(400)
@@ -59,9 +60,9 @@ const createBlogs = async function(req, res) {
         if (!category) {
             return res.status(400).send({status:false, msg: "category must be present" })
         }
-        if(!Array.isArray(category)) return res.send({status:false,msg:"category mustbe  array"})
-
-        if(category.length===0) return res.send({status:false,msg:"enter string values inside category"})
+        if(typeof category !== "string") return res.send({status:false,msg:"category must be  string"})
+        data.category =data.category.trim()
+        
 
         // if(category.every(x =>(typeof x !== 'string'))) return res.send("category shold be string")
         // if isPublished key is present
@@ -69,7 +70,8 @@ const createBlogs = async function(req, res) {
             if(typeof isPublished!=="boolean"){
                 return res.status(400)
                 .send({status: false,msg:"isPublished is boolean so,it can be either true or false"})
-            }
+            }if(isPublished ===true)
+            data.publishedAt =Date.now()
         }
         
         // if isdeleted key is present
@@ -78,6 +80,7 @@ const createBlogs = async function(req, res) {
                 return res.status(400)
                 .send({status: false,msg:"isDeleted is boolean so,it can be either true or false"})
             }
+            if(isDeleted ===true){data.deletedAt =Date.now()}
         }
 
         
@@ -92,6 +95,8 @@ const createBlogs = async function(req, res) {
             if(!Array.isArray(subcategory))return res.status(400)
             .send({status: false,msg:"subcategory should be array of strings"})
         }
+
+       
         
         // Blog Creation
         const Blog = await blogModel.create(data)

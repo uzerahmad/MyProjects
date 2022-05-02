@@ -49,7 +49,7 @@ const createAuthor = async (req, res) => {
         data.password= data.password.trim()
 
         let author = await authorModel.create(data)
-        res.status(201).send({ status: true, Data: author })
+        res.status(201).send({ status: true, data: author })
     }
     catch(err){
         res.status(500).send({status: "error" , msg: err.message})
