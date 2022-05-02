@@ -9,19 +9,19 @@ const createAuthor = async (req, res) => {
          let data = req.body
         //  data validation
 
-        let {firstName,lastName,title, email,password} = data
+        let {fname,lname,title, email,password} = data
         
         if(Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz enter some data" })
 
-        // FirstName validation
-        if(!firstName)  return res.status(400).send({ status:false, msg: "firstName must be present" });
-        if(typeof firstName !== "string") return res.status(400).send({ status:false, msg: "firstName should be string" });
-        data.firstName = data.firstName.trim()
+        // Fname validation
+        if(!fname)  return res.status(400).send({ status:false, msg: "fname must be present" });
+        if(typeof fname !== "string") return res.status(400).send({ status:false, msg: "fname should be string" });
+        data.fname = data.fname.trim()
 
-        // lastName validation
-        if(!lastName)  return res.status(400).send({ status:false, msg: "Last name must be present" });
-        if(typeof lastName !== "string") return res.status(400).send({ status:false, msg: "LastName should be string" });
-        data.lastName=data.lastName.trim()
+        // lname validation
+        if(!lname)  return res.status(400).send({ status:false, msg: "Last name must be present" });
+        if(typeof lname !== "string") return res.status(400).send({ status:false, msg: "Lname should be string" });
+        data.lname=data.lname.trim()
 
         // title validation
         if(!title)  return res.status(400).send({ status:false, msg: "title must be present" });

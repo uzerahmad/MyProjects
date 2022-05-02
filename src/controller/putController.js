@@ -43,7 +43,7 @@ const updateblogs = async function(req,res){
         
         const updateblogs = await blogModel.findByIdAndUpdate( blogId,
         { $addToSet: {tags:tags,subcategory:subcategory},
-          $set : { title: title, body: body,isPublished:true,pulbishedAt: Date.now()}
+          $set : { title: title, body: body,isPublished:true,publishedAt: Date.now()}
         },
         { new: true});
         

@@ -36,7 +36,7 @@ const getBlogs = async function(req,res){
             return res.status(404).send({status:false , msg:"Blogs not found"})
         }
 
-        return res.status(200).send({status: true ,Data :data})
+        return res.status(200).send({status: true ,data :data})
         }
 
         

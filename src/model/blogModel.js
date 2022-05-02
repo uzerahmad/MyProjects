@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId
 
+
 const blogSchema = new mongoose.Schema({
     title: {
         required: true,
@@ -27,7 +28,7 @@ const blogSchema = new mongoose.Schema({
         type: [String]
     },
 
-    deleteAt: {
+    deletedAt: {
         type: Date,
         default: null
     },
@@ -36,7 +37,7 @@ const blogSchema = new mongoose.Schema({
         default: false
 
     },
-    pulbishedAt: {
+    publishedAt: {
         type: Date,
         default: null
     },

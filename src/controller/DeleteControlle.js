@@ -31,7 +31,7 @@ const blogModel = require("../model/blogModel")
                 }
             
             let delteblog = await blogModel.findByIdAndUpdate(data,
-                {$set:{isDeleted:true,deleteAt: Date.now()}},
+                {$set:{isDeleted:true,deletedAt: Date.now()}},
                 {new:true})
             return res.status(200).send("this blog is deleted successfully")    
            
@@ -85,7 +85,7 @@ const blogModel = require("../model/blogModel")
             
 
             let property = await blogModel.updateMany(document,
-                {$set:{isDeleted:true,deleteAt: Date.now()}},
+                {$set:{isDeleted:true,deletedAt: Date.now()}},
                 {new:true});
 
             res.status(200).send({status:true,msg:property})
