@@ -35,11 +35,11 @@ const loginUser = async function (req, res) {
       
       
       res.setHeader("x-api-key", token);
-      res.status(200).send({ status: true, data: token });
+      return res.status(200).send({ status: true, data: token });
     }
     catch(err){
       console.log(err.message)
-       res.status(500).send({status:"error",msg:err.message})
+       return res.status(500).send({status:"error",msg:err.message})
     }
   }
 

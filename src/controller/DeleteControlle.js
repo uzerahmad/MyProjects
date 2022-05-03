@@ -43,7 +43,7 @@ const blogModel = require("../model/blogModel")
     }
 
 
-    const deletByProperty=async (req,res)=>
+    const deletByProperty =  async (req,res)=>
     {
         try{
             let data = req.query
@@ -52,15 +52,15 @@ const blogModel = require("../model/blogModel")
             const {category,tags,authorId,subcategory,isPublished } = data
 
             
-            let token =req["authorId"]
+             let token =req["authorId"]
+
             let document = {
                 isDeleted: false,
-                authorId:token,
                 ...data
             }
             
 
-            if(Object.keys(data).length===0){
+            if(Object.keys(data).length===0||Object.values(data).length===0){
                  return res.status(400).send({status: false , msg :"plz enter the data"})
             }
             
@@ -75,10 +75,11 @@ const blogModel = require("../model/blogModel")
                 return res.status(404).send({status:false,msg:"Plz enter valid data for deletion"})
             }
 
-            let exist = await blogModel.findOne({$and:[data,{isDeleted:false}]})
+            let exist = await blogModel.findOne({ $and:[data,{isDeleted:false}]})
             if(!exist) return res.status(404).send({status:false,msg :"this blog doesn't exist"})
-
-            if(exist.authorId!=token) return res.status(403)
+            
+            // authorization
+            if(exist.authorId != token) return res.status(403)
             .send({status:false,msg:"You are not authorized to access this data"})
 
            
