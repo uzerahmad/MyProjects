@@ -10,8 +10,6 @@ const blogModel = require("../model/blogModel")
 const getBlogs = async function(req,res){
     try
     { let data1 = req.query
-        // delete data1.title
-        // delete data1.body
         
         const {authorId,category,tags,subcategory} = data1
 
@@ -28,8 +26,6 @@ const getBlogs = async function(req,res){
         }  
 
         let filter = {isDeleted:false,isPublished:true, ...data1 }
-        // console.log(filter)
-
         
         let data = await blogModel.find(filter)      
         if(data.length === 0){

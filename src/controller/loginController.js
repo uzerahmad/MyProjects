@@ -10,13 +10,15 @@ const authorModel = require("../model/authorModel");
 
 const loginUser = async function (req, res) {
     try{
+       if(!Object.keys(req.body).length===0) return res.status(400).send({status:false,msg:"Please enter  mail and password"})
       let userName = req.body.email
       let password = req.body.password;
-      if(!userName) {
-        return res.status(400).send({msg:"email can not be empty"})
+
+      if(!userName||userName=== undefined) {
+        return res.status(400).send({status:false,msg:"please enter email"})
       }
-      if(!password) {
-        return res.status(400).send({msg:"password can not be empty"})
+      if(!password||password===undefined) {
+        return res.status(400).send({status:false,msg:"please enter password"})
       }
       userName = userName.trim().toLowerCase()
       password=password.trim()

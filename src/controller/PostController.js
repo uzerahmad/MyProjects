@@ -12,7 +12,7 @@ const createBlogs = async function(req, res) {
         const data = req.body
         //  data validation
         
-        if(Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz enter some data" })
+        if(!data||Object.keys(data).length===0) return res.status(400).send({ status:false, msg: "plz enter some data" })
 
         let {authorId,title,body ,category,tags,subcategory,isPublished, isDeleted}= data
 
@@ -21,8 +21,8 @@ const createBlogs = async function(req, res) {
          if (!authorId) {
              return res.status(400).send({ status:false,msg: "authorId must be present" })
          }
-         
-         let idCheck =mongoose.isValidObjectId(authorId)
+         let idCheck = mongoose.isValidObjectId(authorId)
+         console.log(idCheck)
          if(!idCheck) return res.status(400).send({ status:false, msg: "authorId is not a type of objectId" })
  
          const id = await authorModel.findById(authorId)
@@ -43,28 +43,25 @@ const createBlogs = async function(req, res) {
         if (!title||title===undefined) {
             return res.status(400).send({ status:false, msg: "title is not given" })
         }
-        if(typeof title !== "string") return res.status(400)
-        .send({ status:false, msg: "title should be string" });
-        
-        data.title = data.title.trim()
+        if(typeof title !== "string"||title.trim().length===0) return res.status(400)
+        .send({ status:false, msg: "please enter valid title" });
+        title = title.trim()
 
         // body validation
-        if (!body) {
+        if (!body||body===undefined) {
             return res.status(400).send({status:false, msg: "body is not Given" })
         }
-        if(typeof body !== "string") return res.status(400)
-        .send({ status:false, msg: "body should be string" });
+        if(typeof body !== "string"||body.trim().length===0) return res.status(400)
+        .send({ status:false, msg: "please enter valid body" });
         data.body =data.body.trim()
 
         // category validation
-        if (!category) {
+        if (!category||category===undefined) {
             return res.status(400).send({status:false, msg: "category must be present" })
         }
-        if(typeof category !== "string") return res.send({status:false,msg:"category must be  string"})
+        if(typeof category !== "string"||category.trim().length===0) return res.send({status:false,msg:"please enter valid category"})
         data.category =data.category.trim()
         
-
-        // if(category.every(x =>(typeof x !== 'string'))) return res.send("category shold be string")
         // if isPublished key is present
         if(isPublished){
             if(typeof isPublished!=="boolean"){
@@ -74,7 +71,7 @@ const createBlogs = async function(req, res) {
             data.publishedAt =Date.now()
         }
         
-        // if isdeleted key is present
+        // // if isdeleted key is present
         if(isDeleted){
             if(typeof isDeleted!=="boolean"){
                 return res.status(400)
@@ -83,21 +80,28 @@ const createBlogs = async function(req, res) {
             if(isDeleted ===true){data.deletedAt =Date.now()}
         }
 
-        
         // tags validation
-        if(tags){
-            if(!Array.isArray(tags)) return res.send("tags is not array")  
+        // if(typeof tags =="string") return res.status(400).send({})
+        if(tags||typeof tags =="string"){
+            
+            if(!Array.isArray(tags)) return res.status(400).send({status:false,msg:"tags should be  array"})  
+            
         }
 
         // subcategory validation
 
-        if(subcategory){
+        if(subcategory||typeof tags =="string"){
             if(!Array.isArray(subcategory))return res.status(400)
             .send({status: false,msg:"subcategory should be array of strings"})
+           
+           
         }
+        console.log(data)
 
+        const check = await blogModel.findOne(data)
+        console.log(check)
+        if(check) return res.status(400).send({ status: false,msg:"this blog already exist" })
        
-        
         // Blog Creation
         const Blog = await blogModel.create(data)
         return res.status(201).send({ status: true, data: Blog })
