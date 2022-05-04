@@ -3,10 +3,6 @@ const mongoose  = require('mongoose');
 
 const blogModel = require("../model/blogModel")
  
-
-
-
-
 const updateblogs = async function(req,res){
 
      try{
@@ -16,7 +12,6 @@ const updateblogs = async function(req,res){
         
         let {title,body,tags,subcategory}=data  // destructuring
 
-         
 
         // blogid Validation
         let idCheck = mongoose.isValidObjectId(blogId)

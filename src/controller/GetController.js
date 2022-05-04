@@ -1,11 +1,6 @@
 
 const  mongoose  = require('mongoose');
-
 const blogModel = require("../model/blogModel")
- 
-
-
-
 
 const getBlogs = async function(req,res){
     try

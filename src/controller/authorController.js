@@ -1,9 +1,6 @@
 
 const authorModel = require("../model/authorModel")
 
- 
-
-
 const createAuthor = async (req, res) => {
     try{
          let data = req.body
@@ -65,9 +62,6 @@ const createAuthor = async (req, res) => {
         res.status(500).send({status: "error" , msg: err.message})
     }
 }
-
-
-
 
 module.exports.createAuthor = createAuthor
 
